@@ -6,17 +6,32 @@
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam')">返回至列表</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
         <el-button v-if="!isStudent" type="primary" size="small" @click="$router.push('/exam/' + $route.params.examId + '/result')">查看学生成绩</el-button>
-        <el-button v-if="!isStudent" type="danger" size="small" @click="dialog = true">删除考试</el-button>
+        <el-button v-if="!isStudent" type="danger" size="small" @click="dialog.delete = true">删除考试</el-button>
       </div>
     </div>
-    <el-dialog title="确认删除考试" :visible.sync="dialog" width="30%">
+    <el-dialog title="确认删除考试" :visible.sync="dialog.delete" width="30%">
       <b>确认删除考试吗？</b>
       <p>考试ID：{{ exam.id }}</p>
       <p>考试名称：{{ exam.name }}</p>
       <el-alert title="注意：所有与该场考试有关的提交数据都将被删除！" type="error" :closable="false"></el-alert>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog = false">取消</el-button>
+        <el-button @click="dialog.delete = false">取消</el-button>
         <el-button type="danger" @click="deleteExam" :loading="loading.delete">确定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="修改起止时间" :visible.sync="dialog.update" width="30%">
+      <p>原起止时间：</p>
+      <p>{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</p>
+      <p>新起止时间：</p>
+      <el-date-picker v-model="range" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" style="width: 100%; max-width: 500px"></el-date-picker>
+      <p>注意：</p>
+      <p>开始时间早于当前时间考试将立即开始</p>
+      <p>开始时间晚于当前时间考试将回归未开始状态</p>
+      <p>结束时间早于当前时间考试将立即结束并关闭</p>
+      <p>考试关闭后将无法恢复</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialog.update = false">取消</el-button>
+        <el-button type="primary" @click="updateExam" :loading="loading.update" :disabled="range.length !== 2">确定</el-button>
       </span>
     </el-dialog>
     <el-row :gutter="20">
@@ -34,7 +49,7 @@
       <el-col v-if="!isAdmin" :span="6">
         <div v-if="exam.joined" class="grid-content" style="margin: 6px auto">{{ isTeacher ? '自测' : '' }}成绩：{{ result.score }}</div>
         <div v-else class="grid-content">
-          <el-button type="primary" size="small" @click="joinExam" :loading="loading.join">生成教师自测试卷</el-button>
+          <el-button type="primary" size="small" @click="joinExam" :loading="loading.join">生成自测试卷</el-button>
         </div>
       </el-col>
       <el-col :span="6" style="margin: 6px auto">
@@ -44,7 +59,8 @@
         </div>
       </el-col>
       <el-col :span="12" style="margin: 6px auto">
-        <div class="grid-content">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
+        <div class="grid-content" style="display: inline-block">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
+        <el-button style="padding: 3px" type="primary" @click="dialog.update = true" plain :disabled="isStudent">修改</el-button>
       </el-col>
     </el-row>
     <el-row :gutter="20" v-if="exam.url">
@@ -74,19 +90,19 @@
       </el-col>
     </el-row>
     <el-table v-if="exam.joined" :data="result.commits" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
-      <el-table-column prop="id" label="#" width="50"></el-table-column>
+      <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column label="提交时间">
         <template slot-scope="scope">
           <span>{{ scope.row.created_at | format }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="150">
+      <el-table-column label="状态" width="180">
         <template slot-scope="scope">
           <span>{{ scope.row.finished ? '运行结束' : '等待或运行中' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="score" label="成绩" width="80"></el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column prop="score" label="成绩" width="120"></el-table-column>
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="$router.push('/commit/' + scope.row.id)">详情</el-button>
         </template>
@@ -136,6 +152,24 @@ export default {
         this.fetchData()
       }, response => {
         this.loading.join = false
+        this.$message.error({
+          message: response.status + ':' + response.statusText,
+          center: true
+        })
+      })
+    },
+    updateExam () {
+      this.loading.update = true
+      this.$http.put('/api/exam/' + this.$route.params.examId, {
+        start_at: this.range[0].getTime() / 1000,
+        end_at: this.range[1].getTime() / 1000
+      }).then(response => {
+        this.range = []
+        this.loading.update = false
+        this.dialog.update = false
+        this.fetchData()
+      }, response => {
+        this.loading.update = false
         this.$message.error({
           message: response.status + ':' + response.statusText,
           center: true
@@ -206,9 +240,14 @@ export default {
     return {
       exam: {joined: true},
       result: {},
-      dialog: false,
+      range: [],
+      dialog: {
+        update: false,
+        'delete': false
+      },
       loading: {
         join: false,
+        update: false,
         'delete': false
       }
     }

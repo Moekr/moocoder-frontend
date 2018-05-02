@@ -3,8 +3,8 @@
     <div slot="title">
       <span style="display: inline-block; margin: 6px 0">提交详情</span>
       <div style="float: right">
-        <el-button v-if="isTeacher" type="primary" icon="el-icon-back" size="small" @click="$router.push('/result/' + commit.result.id)">返回至成绩</el-button>
-        <el-button v-else type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + commit.result.exam.id)">返回至考试</el-button>
+        <el-button v-if="backToExam()" type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + commit.result.exam.id)">返回至考试</el-button>
+        <el-button v-else type="primary" icon="el-icon-back" size="small" @click="$router.push('/result/' + commit.result.id)">返回至成绩</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
       </div>
     </div>
@@ -35,13 +35,13 @@
           <span>{{ scope.row.problem.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="150">
+      <el-table-column label="状态" width="180">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | tagType">{{ scope.row.status | tagContent }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="score" label="分数" width="80"></el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="$router.push('/record/' + scope.row.id)">详情</el-button>
         </template>
@@ -69,6 +69,15 @@ export default {
           center: true
         })
       })
+    },
+    backToExam () {
+      if (this.commit) {
+        if (this.commit.result) {
+          if (this.commit.result.owner) {
+            return this.commit.result.owner.id === this.$store.state.user.id
+          }
+        }
+      }
     }
   },
   computed: {

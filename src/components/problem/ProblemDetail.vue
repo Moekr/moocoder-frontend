@@ -7,16 +7,32 @@
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
         <el-button v-if="$store.state.cart.map(item => item.id).includes(problem.id)" type="danger" size="small" @click="$store.commit('removeProblem', problem)">移出试题清单</el-button>
         <el-button v-else-if="isTeacher" type="success" size="small" @click="$store.commit('addProblem', problem)">加入试题清单</el-button>
-        <el-button v-if="isAdmin || (problem.creator && problem.creator.id === $store.state.user.id)" type="danger" size="small" @click="dialog = true">删除题目</el-button>
+        <el-button v-if="isAdmin || (problem.creator && problem.creator.id === $store.state.user.id)" type="danger" size="small" @click="dialog.delete = true">删除题目</el-button>
       </div>
     </div>
-    <el-dialog title="确认删除题目" :visible.sync="dialog" width="30%">
+    <el-dialog title="确认删除题目" :visible.sync="dialog.delete" width="30%">
       <b>确认删除题目吗？</b>
       <p>题目ID：{{ problem.id }}</p>
       <p>题目名称：{{ problem.name }}</p>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog = false">取消</el-button>
-        <el-button type="danger" @click="deleteProblem" :loading="loading">确定</el-button>
+        <el-button @click="dialog.delete = false">取消</el-button>
+        <el-button type="danger" @click="deleteProblem" :loading="loading.delete">确定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="更新题目文件" :visible.sync="dialog.update" width="30%">
+      <el-form label-width="40px">
+        <el-form-item label="路径" prop="name">
+          <div>{{ selectedFile }}</div>
+        </el-form-item>
+        <el-form-item label="文件" prop="file">
+          <el-upload ref="file" action="" :auto-upload="false" :limit="1" :on-change="onFileChange" :on-remove="onFileChange">
+            <el-button slot="trigger" size="small" type="primary">选取</el-button>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelUpdate">取消</el-button>
+        <el-button type="primary" @click="onSubmit" :loading="loading.update" :disabled="!updateFiles.length">确定</el-button>
       </span>
     </el-dialog>
     <el-row>
@@ -52,14 +68,14 @@
           <span>{{ scope.row.path }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="类型" width="150">
+      <el-table-column label="类型" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="120">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" disabled>更新文件</el-button>
+          <el-button type="primary" size="mini" @click="selectedFile = scope.row.path; dialog.update = true" :disabled="updateEnable">更新文件</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -96,15 +112,43 @@ export default {
     },
     deleteProblem () {
       this.$store.commit('removeProblem', this.problem)
-      this.loading = true
+      this.loading.delete = true
       this.$http.delete('/api/problem/' + this.$route.params.problemId).then(response => {
         this.$router.push('/problem')
       }, response => {
-        this.loading = false
+        this.loading.delete = false
         this.$message.error({
           message: response.status + ':' + response.statusText,
           center: true
         })
+      })
+    },
+    onFileChange (file, fileList) {
+      this.updateFiles = fileList
+    },
+    cancelUpdate () {
+      this.$refs['file'].clearFiles()
+      this.updateFiles = []
+      this.dialog.update = false
+    },
+    onSubmit () {
+      this.loading.update = true
+      let body = new FormData()
+      body.append('path', this.selectedFile)
+      body.append('file', this.updateFiles[0].raw)
+      this.$http.patch('/api/problem/' + this.$route.params.problemId, body).then(response => {
+        this.$message.success({
+          message: '更新成功！',
+          center: true
+        })
+        this.loading.update = false
+        this.dialog.update = false
+      }, response => {
+        this.$message.error({
+          message: response.status + ':' + response.statusText,
+          center: true
+        })
+        this.loading.update = false
       })
     }
   },
@@ -113,7 +157,10 @@ export default {
       'isStudent',
       'isTeacher',
       'isAdmin'
-    ])
+    ]),
+    updateEnable: function () {
+      return this.$store.user && ((this.$store.user.id === 0) || (this.problem.creator && this.problem.creator.id === this.$store.user.id))
+    }
   },
   filters: {
     format: function (timestamp) {
@@ -142,8 +189,16 @@ export default {
     return {
       problem: {},
       files: [],
-      dialog: false,
-      loading: false
+      selectedFile: '',
+      updateFiles: [],
+      dialog: {
+        'delete': false,
+        update: false
+      },
+      loading: {
+        'delete': false,
+        update: false
+      }
     }
   },
   created () {

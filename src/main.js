@@ -14,6 +14,19 @@ Vue.config.productionTip = false
 
 Vue.use(VueResource)
 
+Vue.http.interceptors.push((request, next) => {
+  // request.headers.set('Authorization', 'Basic ZGV2czoxMjM0NTY3OA==')
+  // request.headers.set('Authorization', 'Basic ZGV2dDoxMjM0NTY3OA==')
+  // request.headers.set('Authorization', 'Basic cm9vdDoxMjM0NTY3OA==')
+  next((response) => {
+    if (response.status === 401) {
+      window.location.href = '/login.html'
+    } else {
+      return response
+    }
+  })
+})
+
 const components = [Alert, Button, Card, Collapse, CollapseItem, Col, Container, DatePicker, Dialog, Dropdown,
   DropdownItem, DropdownMenu, Form, FormItem, Header, Input, Main, Menu, MenuItem, Message, Option, Pagination, Radio,
   RadioGroup, Row, Select, Table, TableColumn, Tag, Upload]

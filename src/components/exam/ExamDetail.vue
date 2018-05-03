@@ -60,7 +60,7 @@
       </el-col>
       <el-col :span="12" style="margin: 6px auto">
         <div class="grid-content" style="display: inline-block">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
-        <el-button style="padding: 3px" type="primary" @click="dialog.update = true" plain :disabled="isStudent">修改</el-button>
+        <el-button v-if="!isStudent" style="padding: 3px" type="primary" @click="dialog.update = true" plain>修改</el-button>
       </el-col>
     </el-row>
     <el-row :gutter="20" v-if="exam.url">

@@ -1,15 +1,15 @@
 <template>
   <main-container>
     <div slot="title">
-      <span style="display: inline-block; margin: 6px 0">{{ exam.name }}</span>
-      <div style="float: right">
+      <span class="card-title-text">{{ exam.name }}</span>
+      <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam')">返回至列表</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
-        <el-button v-if="!isStudent" type="primary" size="small" @click="$router.push('/exam/' + $route.params.examId + '/result')">查看学生成绩</el-button>
-        <el-button v-if="!isStudent" type="danger" size="small" @click="dialog.delete = true">删除考试</el-button>
+        <el-button v-if="isTeacher || isAdmin" type="primary" size="small" @click="$router.push('/exam/' + $route.params.examId + '/result')">查看学生成绩</el-button>
+        <el-button v-if="isTeacher || isAdmin" type="danger" size="small" @click="dialog.delete = true">删除考试</el-button>
       </div>
     </div>
-    <el-dialog title="确认删除考试" :visible.sync="dialog.delete" width="30%">
+    <el-dialog title="确认删除考试" :visible.sync="dialog.delete">
       <b>确认删除考试吗？</b>
       <p>考试ID：{{ exam.id }}</p>
       <p>考试名称：{{ exam.name }}</p>
@@ -19,11 +19,11 @@
         <el-button type="danger" @click="deleteExam" :loading="loading.delete">确定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="修改起止时间" :visible.sync="dialog.update" width="30%">
+    <el-dialog title="修改起止时间" :visible.sync="dialog.update">
       <p>原起止时间：</p>
       <p>{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</p>
       <p>新起止时间：</p>
-      <el-date-picker v-model="range" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" style="width: 100%; max-width: 500px"></el-date-picker>
+      <el-date-picker v-model="range" type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"></el-date-picker>
       <p>注意：</p>
       <p>开始时间早于当前时间考试将立即开始</p>
       <p>开始时间晚于当前时间考试将回归未开始状态</p>
@@ -46,30 +46,30 @@
       </el-col>
     </el-row>
     <el-row :gutter="20">
-      <el-col v-if="!isAdmin" :span="6">
-        <div v-if="exam.joined" class="grid-content" style="margin: 6px auto">{{ isTeacher ? '自测' : '' }}成绩：{{ result.score }}</div>
+      <el-col v-if="isStudent || isTeacher" :span="6">
+        <div v-if="exam.joined" class="grid-content button-row">{{ isTeacher ? '自测' : '' }}成绩：{{ result.score }}</div>
         <div v-else class="grid-content">
           <el-button type="primary" size="small" @click="joinExam" :loading="loading.join">生成自测试卷</el-button>
         </div>
       </el-col>
-      <el-col :span="6" style="margin: 6px auto">
+      <el-col :span="6" class="button-row">
         <div class="grid-content">
           <span>状态：</span>
-          <el-tag size="mini" :type="tagType">{{ tagContent }}</el-tag>
+          <el-tag size="mini" :type="statusTagType">{{ statusTagContent }}</el-tag>
         </div>
       </el-col>
-      <el-col :span="12" style="margin: 6px auto">
-        <div class="grid-content" style="display: inline-block">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
-        <el-button v-if="!isStudent" style="padding: 3px" type="primary" @click="dialog.update = true" plain>修改</el-button>
+      <el-col :span="12" class="button-row">
+        <div class="grid-content column-text">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
+        <el-button v-if="isTeacher || isAdmin" class="column-button" type="primary" @click="dialog.update = true" plain>修改</el-button>
       </el-col>
     </el-row>
     <el-row :gutter="20" v-if="exam.url">
       <el-col :span="24">
-        <div class="grid-content" style="display: inline-block">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
-        <el-button style="padding: 3px" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
+        <div class="grid-content column-text">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
+        <el-button class="column-button" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
       </el-col>
     </el-row>
-    <div v-if="exam.problems && exam.problems.length" style="border-top: 1px solid #cdcdcd; padding: 12px 0">
+    <div v-if="exam.problems && exam.problems.length" class="top-divide">
       <el-row>
         <el-col>
           <b>题目列表：</b>
@@ -78,18 +78,18 @@
       <el-collapse accordion>
         <el-collapse-item v-for="problem in exam.problems" :key="problem.id" :name="problem.id">
           <template slot="title">
-            {{ problem.name }}<el-tag style="margin-left: 10px">{{ problem.type }}</el-tag>
+            {{ problem.name }}<el-tag class="problem-tag">{{ problem.type | problemTypeTagContent }}</el-tag>
           </template>
           <div>{{ problem.description }}</div>
         </el-collapse-item>
       </el-collapse>
     </div>
-    <el-row v-if="exam.joined" style="padding-top: 12px">
+    <el-row v-if="exam.joined">
       <el-col>
         <b>提交记录：</b>
       </el-col>
     </el-row>
-    <el-table v-if="exam.joined" :data="result.commits" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
+    <el-table v-if="exam.joined" :data="result.commits" class="fill-card">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column label="提交时间">
         <template slot-scope="scope">
@@ -123,44 +123,44 @@ export default {
   },
   methods: {
     fetchData () {
-      this.$http.get('/api/exam/' + this.$route.params.examId).then(response => {
+      this.$http.get('./api/exam/' + this.$route.params.examId).then(response => {
         this.exam = response.body.res
         if (!this.isAdmin && this.exam.joined) {
           this.fetchResult()
         }
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
     },
     fetchResult () {
-      this.$http.get('/api/result/' + this.exam.result.id).then(response => {
+      this.$http.get('./api/result/' + this.exam.result.id).then(response => {
         this.result = response.body.res
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
     },
     joinExam () {
       this.loading.join = true
-      this.$http.post('/api/exam/' + this.$route.params.examId + '/join').then(response => {
+      this.$http.post('./api/exam/' + this.$route.params.examId + '/join').then(response => {
         this.loading.join = false
         this.fetchData()
       }, response => {
         this.loading.join = false
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
     },
     updateExam () {
       this.loading.update = true
-      this.$http.put('/api/exam/' + this.$route.params.examId, {
+      this.$http.put('./api/exam/' + this.$route.params.examId, {
         start_at: this.range[0].getTime() / 1000,
         end_at: this.range[1].getTime() / 1000
       }).then(response => {
@@ -171,19 +171,19 @@ export default {
       }, response => {
         this.loading.update = false
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
     },
     deleteExam () {
       this.loading.delete = true
-      this.$http.delete('/api/exam/' + this.$route.params.examId).then(response => {
+      this.$http.delete('./api/exam/' + this.$route.params.examId).then(response => {
         this.$router.push('/exam')
       }, response => {
         this.loading.delete = false
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -195,44 +195,23 @@ export default {
       'isTeacher',
       'isAdmin'
     ]),
-    tagType: function () {
-      switch (this.exam.status) {
-        case 'READY':
-          return ''
-        case 'AVAILABLE':
-          return 'success'
-        case 'FINISHED':
-          return 'warning'
-        case 'UNAVAILABLE':
-          return 'danger'
-      }
-      return 'info'
+    statusTagType: function () {
+      return Tool.examStatusToTagType(this.exam.status)
     },
-    tagContent: function () {
-      switch (this.exam.status) {
-        case 'PREPARING':
-          return '准备中'
-        case 'UNAVAILABLE':
-          return '初始化失败'
-        case 'READY':
-          return '尚未开始'
-        case 'AVAILABLE':
-          return '正在进行'
-        case 'FINISHED':
-          return '已结束'
-        case 'CLOSED':
-          return '已关闭'
-      }
-      return '未知状态'
+    statusTagContent: function () {
+      return Tool.examStatusToTagContent(this.exam.status)
     }
   },
   filters: {
     format: function (timestamp) {
       return Tool.formatTimestamp(timestamp)
+    },
+    problemTypeTagContent: function (type) {
+      return Tool.problemTypeToTagContent(type)
     }
   },
   watch: {
-    '$route' (to, from) {
+    '$route' () {
       this.fetchData()
     }
   },
@@ -259,15 +238,10 @@ export default {
 </script>
 
 <style scoped>
-  .el-row {
-    margin-bottom: 20px;
+  .top-divide {
+    margin-bottom: 12px;
   }
-  .el-row:last-child {
-    margin-bottom: 0;
-  }
-  .el-pagination {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
+  .problem-tag {
+    margin-left: 10px;
   }
 </style>

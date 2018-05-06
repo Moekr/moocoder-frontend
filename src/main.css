@@ -1,0 +1,83 @@
+/* 标题 */
+.card-title-text {
+  display: inline-block;
+  margin: 6px 0;
+}
+.card-title-button {
+  float: right;
+}
+/* 列表头 */
+.list-header {
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+.list-header-input {
+  width: 200px;
+}
+.list-header-button {
+  float: right;
+}
+/* 行间距 */
+.el-row {
+  margin-bottom: 20px;
+}
+.el-row:last-child {
+  margin-bottom: 0;
+}
+/* 带Button的行 */
+.button-row {
+  margin: 6px auto;
+}
+/* 带Button的列 */
+.column-text {
+  display: inline-block;
+}
+.column-button {
+  padding: 3px;
+}
+/* 上分割线 */
+.top-divide {
+  border-top: 1px solid #cdcdcd;
+  padding-top: 12px;
+}
+/* 填充 */
+.fill-card {
+  height: 100%;
+  width: 100%;
+  flex:1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+/* 分页 */
+.el-pagination {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+.form-button {
+  float: right;
+}
+/* 对话框 */
+.el-dialog {
+  width: 500px;
+}
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-track, ::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 5px solid transparent;
+}
+::-webkit-scrollbar-track {
+  box-shadow: 1px 1px 5px rgba(0,0,0,.2) inset;
+}
+::-webkit-scrollbar-thumb {
+  min-height: 20px;
+  background-clip: content-box;
+  box-shadow: 0 0 0 5px rgba(0,0,0,.2) inset;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

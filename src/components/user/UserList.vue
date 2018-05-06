@@ -1,13 +1,13 @@
 <template>
     <main-container title="用户列表">
-      <div style="margin-bottom: 10px; padding: 0 5px">
-        <el-input v-model="searchInput" placeholder="搜索用户名" style="width: 200px"></el-input>
-        <div style="float: right">
-          <el-button type="primary" icon="el-icon-search" size="small" @click="fetchData(1)">搜索</el-button>
-          <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData(pageInfo.page)">刷新</el-button>
+      <div class="list-header">
+        <el-input v-model="searchInput" placeholder="搜索用户名" class="list-header-input"></el-input>
+        <div class="list-header-button">
+          <el-button type="primary" icon="el-icon-search" @click="fetchData(1)">搜索</el-button>
+          <el-button type="primary" icon="el-icon-refresh" @click="fetchData(pageInfo.page)">刷新</el-button>
         </div>
       </div>
-      <el-dialog title="确认删除用户" :visible.sync="dialog" width="30%">
+      <el-dialog title="确认删除用户" :visible.sync="dialog">
         <b>确认删除用户吗？</b>
         <p>用户ID：{{ selectedUser.id }}</p>
         <p>用户名：{{ selectedUser.username }}</p>
@@ -17,11 +17,11 @@
           <el-button type="danger" @click="deleteUser" :loading="loading">确定</el-button>
         </span>
       </el-dialog>
-      <el-table :data="userList" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
+      <el-table :data="userList" class="fill-card">
         <el-table-column prop="id" label="#" width="50"></el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="150px"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column label="注册时间">
+        <el-table-column label="注册时间" width="150px">
           <template slot-scope="scope">
             <span>{{ scope.row.created_at | format }}</span>
           </template>
@@ -37,7 +37,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination background layout="prev, pager, next" @current-change="fetchData" :total=pageInfo.total></el-pagination>
+      <el-pagination background layout="prev, pager, next" @current-change="fetchData" page-size="30" :total=pageInfo.total></el-pagination>
     </main-container>
 </template>
 
@@ -52,12 +52,12 @@ export default {
   },
   methods: {
     fetchData (page) {
-      this.$http.get('/api/user?page=' + page + '&limit=30&search=' + this.searchInput).then(response => {
+      this.$http.get('./api/user?page=' + page + '&limit=30&search=' + this.searchInput).then(response => {
         this.pageInfo = response.body.page
         this.userList = response.body.res
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -67,13 +67,13 @@ export default {
       this.dialog = true
     },
     deleteUser () {
-      this.$http.delete('/api/user/' + this.selectedUser.id).then(response => {
+      this.$http.delete('./api/user/' + this.selectedUser.id).then(response => {
         this.dialog = false
         this.loading = false
         this.fetchData(this.pageInfo.page)
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
         this.loading = false
@@ -109,11 +109,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .el-pagination {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-  }
-</style>

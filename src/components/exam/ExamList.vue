@@ -1,19 +1,21 @@
 <template>
   <main-container title="考试列表">
-    <div style="margin-bottom: 10px; padding: 0 5px">
+    <div class="list-header">
       <el-select v-model="statusInput" value="" @change="fetchData(1)">
         <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>
       </el-select>
-      <el-button type="primary" icon="el-icon-refresh" size="small" style="float: right" @click="fetchData(pageInfo.page)">刷新</el-button>
+      <el-button type="primary" icon="el-icon-refresh" class="list-header-button" @click="fetchData(pageInfo.page)">刷新</el-button>
     </div>
-    <div style="flex:1; overflow-y: auto">
+    <div class="fill-card">
       <exam-list-item v-for="exam in examList" :key="exam.id" :exam="exam" class="exam-list-item" @joined="fetchData(1)"></exam-list-item>
     </div>
-    <el-pagination background layout="prev, pager, next" @current-change="fetchData" :total=pageInfo.total></el-pagination>
+    <el-pagination background layout="prev, pager, next" @current-change="fetchData" page-size="20" :total=pageInfo.total></el-pagination>
   </main-container>
 </template>
 
 <script>
+import Tool from '../../util/tool'
+import Options from '../../util/options'
 import MainContainer from '../MainContainer'
 import ExamListItem from './ExamListItem'
 
@@ -25,27 +27,24 @@ export default {
   },
   methods: {
     fetchData (page) {
-      this.$http.get('/api/exam?page=' + page + '&status=' + this.statusInput).then(response => {
+      this.$http.get('./api/exam?page=' + page + '&limit=20&status=' + this.statusInput).then(response => {
         this.pageInfo = response.body.page
         this.examList = response.body.res
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
     }
   },
+  computed: {
+    statusOptions: function () {
+      return Options.examStatusOptions(this.$store.state.user.role)
+    }
+  },
   data () {
     return {
-      statusOptions: [
-        {label: '所有考试', value: ''},
-        {label: '已参加的', value: 'JOINED'},
-        {label: '尚未开始', value: 'READY'},
-        {label: '正在进行', value: 'AVAILABLE'},
-        {label: '已结束', value: 'FINISHED'},
-        {label: '已关闭', value: 'CLOSED'}
-      ],
       statusInput: '',
       pageInfo: {},
       examList: []
@@ -61,10 +60,5 @@ export default {
   .exam-list-item {
     margin: 5px;
     height: 100%;
-  }
-  .el-pagination {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
   }
 </style>

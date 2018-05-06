@@ -1,13 +1,13 @@
 <template>
   <main-container>
     <div slot="title">
-      <span style="display: inline-block; margin: 6px 0">成绩详情</span>
-      <div style="float: right">
+      <span class="card-title-text">成绩详情</span>
+      <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + result.exam.id + '/result')">返回至成绩列表</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
       </div>
     </div>
-    <el-table :data="result.commits" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
+    <el-table :data="result.commits" class="fill-card">
       <el-table-column prop="id" label="#" width="80"></el-table-column>
       <el-table-column label="提交时间">
         <template slot-scope="scope">
@@ -40,11 +40,11 @@ export default {
   },
   methods: {
     fetchData: function () {
-      this.$http.get('/api/result/' + this.$route.params.resultId).then(response => {
+      this.$http.get('./api/result/' + this.$route.params.resultId).then(response => {
         this.result = response.body.res
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -56,7 +56,7 @@ export default {
     }
   },
   watch: {
-    '$route' (to, from) {
+    '$route' () {
       this.fetchData()
     }
   },
@@ -70,7 +70,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

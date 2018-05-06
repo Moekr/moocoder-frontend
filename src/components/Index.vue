@@ -10,11 +10,11 @@
           <icon name="regular/plus-square" scale="1.2"></icon>
           <span slot="title">创建考试</span>
         </el-menu-item>
-        <el-menu-item v-if="!isStudent" index="/problem">
+        <el-menu-item v-if="isTeacher || isAdmin" index="/problem">
           <icon name="regular/file-code" scale="1.2"></icon>
           <span slot="title">题目</span>
         </el-menu-item>
-        <el-menu-item v-if="!isStudent" index="/problem/upload">
+        <el-menu-item v-if="isTeacher || isAdmin" index="/problem/upload">
           <icon name="regular/plus-square" scale="1.2"></icon>
           <span slot="title">上传题目</span>
         </el-menu-item>
@@ -37,9 +37,11 @@
 </template>
 
 <script>
+import { Message } from 'element-ui'
 import Icon from 'vue-awesome/components/Icon'
 import Clipboard from 'clipboard'
 import { mapGetters } from 'vuex'
+import '../main.css'
 import 'vue-awesome/icons/regular/file-alt'
 import 'vue-awesome/icons/regular/plus-square'
 import 'vue-awesome/icons/regular/file-code'
@@ -48,11 +50,17 @@ import 'vue-awesome/icons/regular/question-circle'
 
 let cb = new Clipboard('#copy-btn')
 cb.on('success', function (e) {
-  alert('已复制到剪贴板！')
+  Message.success({
+    message: '已复制到剪贴板！',
+    center: true
+  })
   e.clearSelection()
 })
 cb.on('error', function (e) {
-  alert('浏览器不支持复制到剪贴板！')
+  Message.error({
+    message: '浏览器不支持复制到剪贴板！',
+    center: true
+  })
 })
 
 export default {

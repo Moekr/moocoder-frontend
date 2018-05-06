@@ -1,8 +1,8 @@
 <template>
   <main-container>
     <div slot="title">
-      <span style="display: inline-block; margin: 6px 0">提交详情</span>
-      <div style="float: right">
+      <span class="card-title-text">提交详情</span>
+      <div class="card-title-button">
         <el-button v-if="backToExam()" type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + commit.result.exam.id)">返回至考试</el-button>
         <el-button v-else type="primary" icon="el-icon-back" size="small" @click="$router.push('/result/' + commit.result.id)">返回至成绩</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
@@ -24,12 +24,12 @@
         <div class="grid-content">Git Commit ID：{{ commit.hash }}</div>
       </el-col>
     </el-row>
-    <el-row style="border-top: 1px solid #cdcdcd; padding-top: 12px">
+    <el-row class="top-divide">
       <el-col>
         <b>测试运行情况：</b>
       </el-col>
     </el-row>
-    <el-table :data="commit.records" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
+    <el-table :data="commit.records" class="fill-card">
       <el-table-column label="题目">
         <template slot-scope="scope">
           <span>{{ scope.row.problem.name }}</span>
@@ -37,7 +37,7 @@
       </el-table-column>
       <el-table-column label="状态" width="180">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | tagType">{{ scope.row.status | tagContent }}</el-tag>
+          <el-tag :type="scope.row.status | statusTagType">{{ scope.row.status | statusTagContent }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="score" label="分数" width="80"></el-table-column>
@@ -52,6 +52,7 @@
 
 <script>
 import Tool from '../../util/tool'
+import { mapGetters } from 'vuex'
 import MainContainer from '../MainContainer'
 
 export default {
@@ -61,11 +62,11 @@ export default {
   },
   methods: {
     fetchData () {
-      this.$http.get('/api/commit/' + this.$route.params.commitId).then(response => {
+      this.$http.get('./api/commit/' + this.$route.params.commitId).then(response => {
         this.commit = response.body.res
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -81,48 +82,25 @@ export default {
     }
   },
   computed: {
-    isTeacher: function () {
-      return this.$store.state.user.role === 'TEACHER'
-    }
+    ...mapGetters([
+      'isStudent',
+      'isTeacher',
+      'isAdmin'
+    ])
   },
   filters: {
     format: function (timestamp) {
       return Tool.formatTimestamp(timestamp)
     },
-    tagType: function (status) {
-      switch (status) {
-        case 'RUNNING':
-          return ''
-        case 'SUCCESS':
-          return 'success'
-        case 'UNSTABLE':
-          return 'warning'
-        case 'FAILURE':
-        case 'TIMEOUT':
-          return 'danger'
-      }
-      return 'info'
+    statusTagType: function (status) {
+      return Tool.buildStatusToTagType(status)
     },
-    tagContent: function (status) {
-      switch (status) {
-        case 'SUCCESS':
-          return '所有用例通过'
-        case 'UNSTABLE':
-          return '有用例未通过'
-        case 'FAILURE':
-          return '编译或运行失败'
-        case 'TIMEOUT':
-          return '运行超时'
-        case 'WAITING':
-          return '等待运行'
-        case 'RUNNING':
-          return '正在运行'
-      }
-      return '未知状态'
+    statusTagContent: function (status) {
+      return Tool.buildStatusToTagContent(status)
     }
   },
   watch: {
-    '$route' (to, from) {
+    '$route' () {
       this.fetchData()
     }
   },
@@ -136,12 +114,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .el-row {
-    margin-bottom: 20px;
-  }
-  .el-row:last-child {
-    margin-bottom: 0;
-  }
-</style>

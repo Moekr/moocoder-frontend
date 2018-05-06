@@ -1,16 +1,16 @@
 <template>
   <main-container>
     <div slot="title">
-      <span style="display: inline-block; margin: 6px 0">题目详情</span>
-      <div style="float: right">
+      <span class="card-title-text">题目详情</span>
+      <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/problem')">返回至列表</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
-        <el-button v-if="$store.state.cart.map(item => item.id).includes(problem.id)" type="danger" size="small" @click="$store.commit('removeProblem', problem)">移出试题清单</el-button>
-        <el-button v-else-if="isTeacher" type="success" size="small" @click="$store.commit('addProblem', problem)">加入试题清单</el-button>
-        <el-button v-if="isAdmin || (problem.creator && problem.creator.id === $store.state.user.id)" type="danger" size="small" @click="dialog.delete = true">删除题目</el-button>
+        <el-button v-if="removeEnable" type="danger" size="small" @click="$store.commit('removeProblem', problem)">移出试题清单</el-button>
+        <el-button v-else-if="addEnable" type="success" size="small" @click="$store.commit('addProblem', problem)">加入试题清单</el-button>
+        <el-button v-if="deleteEnable" type="danger" size="small" @click="dialog.delete = true">删除题目</el-button>
       </div>
     </div>
-    <el-dialog title="确认删除题目" :visible.sync="dialog.delete" width="30%">
+    <el-dialog title="确认删除题目" :visible.sync="dialog.delete">
       <b>确认删除题目吗？</b>
       <p>题目ID：{{ problem.id }}</p>
       <p>题目名称：{{ problem.name }}</p>
@@ -19,7 +19,7 @@
         <el-button type="danger" @click="deleteProblem" :loading="loading.delete">确定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="更新题目文件" :visible.sync="dialog.update" width="30%">
+    <el-dialog title="更新题目文件" :visible.sync="dialog.update">
       <el-form label-width="40px">
         <el-form-item label="路径" prop="name">
           <div>{{ selectedFile }}</div>
@@ -45,7 +45,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="8">
-        <div class="grid-content">题目类型：{{ problem.type | type }}</div>
+        <div class="grid-content">题目类型：{{ typeTagContent }}</div>
       </el-col>
       <el-col :span="8">
         <div class="grid-content">上传者：{{ problem.creator ? problem.creator.username : '系统' }}</div>
@@ -62,7 +62,7 @@
         <div class="grid-content">{{ problem.description }}</div>
       </el-col>
     </el-row>
-    <el-table :data="files" style="height: 100%; width: 100%; flex:1; overflow-y: auto">
+    <el-table :data="files" class="fill-card">
       <el-table-column label="文件列表">
         <template slot-scope="scope">
           <span>{{ scope.row.path }}</span>
@@ -94,12 +94,12 @@ export default {
   },
   methods: {
     fetchData () {
-      this.$http.get('/api/problem/' + this.$route.params.problemId).then(response => {
+      this.$http.get('./api/problem/' + this.$route.params.problemId).then(response => {
         this.problem = response.body.res
         this.listFiles()
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -113,12 +113,12 @@ export default {
     deleteProblem () {
       this.$store.commit('removeProblem', this.problem)
       this.loading.delete = true
-      this.$http.delete('/api/problem/' + this.$route.params.problemId).then(response => {
+      this.$http.delete('./api/problem/' + this.$route.params.problemId).then(response => {
         this.$router.push('/problem')
       }, response => {
         this.loading.delete = false
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -136,7 +136,7 @@ export default {
       let body = new FormData()
       body.append('path', this.selectedFile)
       body.append('file', this.updateFiles[0].raw)
-      this.$http.patch('/api/problem/' + this.$route.params.problemId, body).then(response => {
+      this.$http.patch('./api/problem/' + this.$route.params.problemId, body).then(response => {
         this.$message.success({
           message: '更新成功！',
           center: true
@@ -145,7 +145,7 @@ export default {
         this.dialog.update = false
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
         this.loading.update = false
@@ -158,30 +158,30 @@ export default {
       'isTeacher',
       'isAdmin'
     ]),
+    removeEnable: function () {
+      return this.$store.state.cart.map(item => item.id).includes(this.problem.id)
+    },
+    addEnable () {
+      return this.isTeacher && this.problem.modified_at
+    },
     updateEnable: function () {
-      return this.$store.user && ((this.$store.user.id === 0) || (this.problem.creator && this.problem.creator.id === this.$store.user.id))
+      return this.problem.modified_at && this.$store.user &&
+        ((this.$store.user.id === 0) || (this.problem.creator && this.problem.creator.id === this.$store.user.id))
+    },
+    deleteEnable: function () {
+      return this.isAdmin || (this.problem.creator && this.problem.creator.id === this.$store.state.user.id)
+    },
+    typeTagContent: function () {
+      return Tool.problemTypeToTagContent(this.problem.type)
     }
   },
   filters: {
     format: function (timestamp) {
       return Tool.formatTimestamp(timestamp)
-    },
-    type: function (type) {
-      switch (type) {
-        case 'JAVA':
-          return 'Java'
-        case 'JAVA_COVERAGE':
-          return 'Java覆盖测试'
-        case 'PYTHON':
-          return 'Python'
-        case 'PYTHON_COVERAGE':
-          return 'Python覆盖测试'
-      }
-      return type
     }
   },
   watch: {
-    '$route' (to, from) {
+    '$route' () {
       this.fetchData()
     }
   },
@@ -206,12 +206,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .el-row {
-    margin-bottom: 24px;
-  }
-  .el-row:last-child {
-    margin-bottom: 0;
-  }
-</style>

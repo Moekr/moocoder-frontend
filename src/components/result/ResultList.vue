@@ -1,15 +1,15 @@
 <template>
   <main-container>
     <div slot="title">
-      <span style="display: inline-block; margin: 6px 0">学生成绩</span>
-      <div style="float: right">
+      <span class="card-title-text">学生成绩</span>
+      <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + $route.params.examId)">返回至考试</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
       </div>
     </div>
     <e-charts :options="chartOptions"></e-charts>
-    <div style="flex:1; overflow-x: hidden; overflow-y: auto">
-      <el-table :data="resultList" style="width: 100%">
+    <div class="fill-card">
+      <el-table :data="resultList">
         <el-table-column prop="id" label="#" width="100"></el-table-column>
         <el-table-column label="用户名">
           <template slot-scope="scope">
@@ -48,12 +48,12 @@ export default {
   },
   methods: {
     fetchData () {
-      this.$http.get('/api/exam/' + this.$route.params.examId + '/result').then(response => {
+      this.$http.get('./api/exam/' + this.$route.params.examId + '/result').then(response => {
         this.resultList = response.body.res
         this.chartOptions.series[0].data = this.resultList.map(result => result.score / 10).reduce((a, b) => { a[b]++; return a }, new Array(11).fill(0))
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
       })
@@ -65,7 +65,7 @@ export default {
     }
   },
   watch: {
-    '$route' (to, from) {
+    '$route' () {
       this.fetchData()
     }
   },

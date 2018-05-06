@@ -2,7 +2,7 @@
   <el-container>
     <el-header>
       <span class="brand">MOOCODER</span>
-      <el-dropdown trigger="click" style="float: right; cursor: pointer" @command="handleCommand">
+      <el-dropdown trigger="click" @command="handleCommand">
         <span class="el-dropdown-link"><span>{{ username }}</span><i class="el-icon-arrow-down el-icon--right"></i></span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="logout">退出登录</el-dropdown-item>
@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     fetchUser () {
-      this.$http.get('/api/user/current').then(response => {
+      this.$http.get('./api/user/current').then(response => {
         this.$store.commit('saveUser', response.body.res)
       }, response => {
         this.$message.error({
@@ -37,7 +37,7 @@ export default {
     handleCommand (command) {
       switch (command) {
         case 'logout':
-          window.location.href = '/logout.html'
+          window.location.href = './logout.html'
       }
     }
   },
@@ -55,6 +55,10 @@ export default {
   .el-header {
     background-color: #409EFF;
     line-height: 60px;
+  }
+  .el-dropdown {
+    float: right;
+    cursor: pointer;
   }
   .brand {
     color: #606266;

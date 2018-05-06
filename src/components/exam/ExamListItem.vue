@@ -2,11 +2,11 @@
   <el-card class="box-card" shadow="never">
     <div slot="header">
       <span>{{ exam.name }}</span>
-      <el-tag :type="tagType">{{ tagContent }}</el-tag>
-      <el-button v-if="isStudent && !exam.joined" style="float: right; padding: 8px" type="primary" @click="dialog = true">参加考试</el-button>
-      <el-button v-else style="float: right; padding: 8px" type="primary" @click="$router.push('/exam/' + exam.id)" plain>查看详情</el-button>
+      <el-tag :type="statusTagType">{{ statusTagContent }}</el-tag>
+      <el-button v-if="isStudent && !exam.joined" class="join-button" type="primary" @click="dialog = true">参加考试</el-button>
+      <el-button v-else class="join-button" type="primary" @click="$router.push('/exam/' + exam.id)" plain>查看详情</el-button>
     </div>
-    <el-dialog title="确认参加考试" :visible.sync="dialog" width="30%">
+    <el-dialog title="确认参加考试" :visible.sync="dialog">
       <b>确认参加这场考试吗？</b>
       <p>考试名称：{{ exam.name }}</p>
       <p>创建者：{{ exam.creator.username }}</p>
@@ -17,20 +17,23 @@
       </span>
     </el-dialog>
     <el-row :gutter="20">
-      <el-col :span="6">
-        <div class="grid-content bg-purple">编号：{{ exam.id }}</div>
+      <el-col :span="4">
+        <div class="grid-content">编号：{{ exam.id }}</div>
       </el-col>
       <el-col :span="6">
-        <div class="grid-content bg-purple">创建者：{{ exam.creator.username }}</div>
+        <div class="grid-content">创建者：{{ exam.creator.username }}</div>
       </el-col>
-      <el-col :span="12">
-        <div class="grid-content bg-purple">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
+      <el-col :span="14">
+        <div class="grid-content">起止时间：{{ exam.start_at | format }} 至 {{ exam.end_at | format }}</div>
       </el-col>
     </el-row>
     <el-row :gutter="20" v-if="exam.url">
-      <el-col :span="24">
-        <div class="grid-content bg-purple" style="display: inline-block">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
-        <el-button style="padding: 3px" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
+      <el-col :span="4" v-if="isStudent">
+        <div class="grid-content">成绩：{{ exam.result.score }}</div>
+      </el-col>
+      <el-col :span="20">
+        <div class="grid-content column-text">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
+        <el-button class="column-button" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
       </el-col>
     </el-row>
   </el-card>
@@ -38,6 +41,7 @@
 
 <script>
 import Tool from '../../util/tool'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -47,7 +51,7 @@ export default {
   methods: {
     join () {
       this.joining = true
-      this.$http.post('/api/exam/' + this.exam.id + '/join').then(response => {
+      this.$http.post('./api/exam/' + this.exam.id + '/join').then(response => {
         this.$message.success({
           message: '参加考试成功！',
           center: true
@@ -57,7 +61,7 @@ export default {
         this.$emit('joined')
       }, response => {
         this.$message.error({
-          message: response.status + ':' + response.statusText,
+          message: Tool.errorMessage(response),
           center: true
         })
         this.joining = false
@@ -66,38 +70,16 @@ export default {
     }
   },
   computed: {
-    isStudent: function () {
-      return this.$store.state.user.role === 'STUDENT'
+    ...mapGetters([
+      'isStudent',
+      'isTeacher',
+      'isAdmin'
+    ]),
+    statusTagType: function () {
+      return Tool.examStatusToTagType(this.exam.status)
     },
-    tagType: function () {
-      switch (this.exam.status) {
-        case 'UNAVAILABLE':
-          return 'danger'
-        case 'READY':
-          return ''
-        case 'AVAILABLE':
-          return 'success'
-        case 'FINISHED':
-          return 'warning'
-      }
-      return 'info'
-    },
-    tagContent: function () {
-      switch (this.exam.status) {
-        case 'PREPARING':
-          return '准备中'
-        case 'UNAVAILABLE':
-          return '初始化失败'
-        case 'READY':
-          return '尚未开始'
-        case 'AVAILABLE':
-          return '正在进行'
-        case 'FINISHED':
-          return '已结束'
-        case 'CLOSED':
-          return '已关闭'
-      }
-      return '未知状态'
+    statusTagContent: function () {
+      return Tool.examStatusToTagContent(this.exam.status)
     }
   },
   filters: {
@@ -115,10 +97,8 @@ export default {
 </script>
 
 <style scoped>
-  .el-row {
-    margin-bottom: 20px;
-  }
-  .el-row:last-child {
-    margin-bottom: 0;
+  .join-button {
+    float: right;
+    padding: 8px;
   }
 </style>

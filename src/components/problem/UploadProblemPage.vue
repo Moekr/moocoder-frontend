@@ -1,6 +1,6 @@
 <template>
     <main-container title="上传题目">
-      <el-form ref="form" :model="form" label-width="80px" :rules="rules" style="flex:1; overflow-x: hidden; overflow-y: auto">
+      <el-form ref="form" :model="form" label-width="80px" :rules="rules" class="fill-card">
         <el-form-item label="题目名称" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -18,7 +18,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item>
-          <div style="float: right">
+          <div class="form-button">
             <el-button type="danger" @click="resetForm" plain>重置</el-button>
             <el-button type="primary" @click="onSubmit" :loading="loading" :disabled="!files.length">上传</el-button>
           </div>
@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import Tool from '../../util/tool'
+import Options from '../../util/options'
 import MainContainer from '../MainContainer'
 
 export default {
@@ -47,34 +49,36 @@ export default {
     onSubmit () {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.loading = true
-          let body = new FormData()
-          let meta = new Blob([JSON.stringify(this.form)], {type: 'application/json'})
-          body.append('meta', meta)
-          body.append('data', this.files[0].raw)
-          this.$http.post('/api/problem', body).then(response => {
-            this.$router.push('/problem/' + response.body.res.id)
-          }, response => {
-            this.$message.error({
-              message: response.status + ':' + response.statusText,
-              center: true
-            })
-            this.loading = false
-          })
+          this.uploadProblem()
         } else {
           return false
         }
       })
+    },
+    uploadProblem () {
+      this.loading = true
+      let body = new FormData()
+      let meta = new Blob([JSON.stringify(this.form)], {type: 'application/json'})
+      body.append('meta', meta)
+      body.append('data', this.files[0].raw)
+      this.$http.post('./api/problem', body).then(response => {
+        this.$router.push('/problem/' + response.body.res.id)
+      }, response => {
+        this.$message.error({
+          message: Tool.errorMessage(response),
+          center: true
+        })
+        this.loading = false
+      })
+    }
+  },
+  computed: {
+    typeOptions: function () {
+      return Options.problemTypeOptions()
     }
   },
   data () {
     return {
-      typeOptions: [
-        {label: 'Java', value: 'JAVA'},
-        {label: 'Java覆盖测试', value: 'JAVA_COVERAGE'},
-        {label: 'Python', value: 'PYTHON'},
-        {label: 'Python覆盖测试', value: 'PYTHON_COVERAGE'}
-      ],
       form: {},
       rules: {
         name: [
@@ -93,7 +97,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

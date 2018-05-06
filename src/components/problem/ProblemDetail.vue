@@ -75,7 +75,7 @@
       </el-table-column>
       <el-table-column label="操作" width="120">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="selectedFile = scope.row.path; dialog.update = true" :disabled="updateEnable">更新文件</el-button>
+          <el-button type="primary" size="mini" @click="selectedFile = scope.row.path; dialog.update = true" :disabled="!updateEnable">更新文件</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -165,8 +165,9 @@ export default {
       return this.isTeacher && this.problem.modified_at
     },
     updateEnable: function () {
-      return this.problem.modified_at && this.$store.user &&
-        ((this.$store.user.id === 0) || (this.problem.creator && this.problem.creator.id === this.$store.user.id))
+      const user = this.$store.state.user
+      const creator = this.problem.creator
+      return this.problem.modified_at && (this.isAdmin || (creator && creator.id === user.id))
     },
     deleteEnable: function () {
       return this.isAdmin || (this.problem.creator && this.problem.creator.id === this.$store.state.user.id)

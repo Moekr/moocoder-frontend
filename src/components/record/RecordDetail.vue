@@ -8,7 +8,7 @@
       </div>
     </div>
     <el-dialog title="控制台输出" :visible.sync="dialog" width="1080px" class="console-output-dialog">
-      <pre><code>{{ record.console_output }}</code></pre>
+      <pre><code class="console-output-code">{{ record.console_output }}</code></pre>
     </el-dialog>
     <el-row :gutter="20">
       <el-col :span="6">
@@ -86,7 +86,6 @@ export default {
 
 <style scoped>
   pre code {
-    height: 50vh;
     overflow: auto;
     display: block;
     padding: 10px;
@@ -98,6 +97,9 @@ export default {
     border: 1px solid #ccc;
     border-radius: 0.5em;
     white-space: pre;
+  }
+  .console-output-code {
+    height: 50vh;
   }
 </style>
 

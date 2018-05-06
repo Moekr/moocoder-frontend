@@ -50,7 +50,7 @@ export default {
     fetchData () {
       this.$http.get('./api/exam/' + this.$route.params.examId + '/result').then(response => {
         this.resultList = response.body.res
-        this.chartOptions.series[0].data = this.resultList.map(result => result.score / 10).reduce((a, b) => { a[b]++; return a }, new Array(11).fill(0))
+        this.chartOptions.series[0].data = this.resultList.map(result => Math.floor(result.score / 10)).reduce((a, b) => { a[b]++; return a }, new Array(11).fill(0))
       }, response => {
         this.$message.error({
           message: Tool.errorMessage(response),

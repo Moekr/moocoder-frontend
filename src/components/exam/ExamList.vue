@@ -9,7 +9,7 @@
     <div class="fill-card">
       <exam-list-item v-for="exam in examList" :key="exam.id" :exam="exam" class="exam-list-item" @joined="fetchData(1)"></exam-list-item>
     </div>
-    <el-pagination background layout="prev, pager, next" @current-change="fetchData" page-size="20" :total=pageInfo.total></el-pagination>
+    <el-pagination background layout="prev, pager, next" @current-change="fetchData" :page-size="20" :total=pageInfo.total></el-pagination>
   </main-container>
 </template>
 
@@ -59,6 +59,5 @@ export default {
 <style scoped>
   .exam-list-item {
     margin: 5px;
-    height: 100%;
   }
 </style>

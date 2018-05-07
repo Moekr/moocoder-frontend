@@ -31,7 +31,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination background layout="prev, pager, next" @current-change="fetchData" page-size="30" :total=pageInfo.total></el-pagination>
+      <el-pagination background layout="prev, pager, next" @current-change="fetchData" :page-size="30" :total=pageInfo.total></el-pagination>
     </main-container>
 </template>
 

@@ -32,8 +32,8 @@
         <div class="grid-content">成绩：{{ exam.result.score }}</div>
       </el-col>
       <el-col :span="20">
-        <div class="grid-content column-text">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
-        <el-button class="column-button" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
+        <div class="grid-content column-text">试卷地址：<span :id="'exam-url-' + exam.id">{{ exam.url }}</span></div>
+        <el-button class="column-button" type="primary" id="copy-btn" :data-clipboard-target="'#exam-url-' + exam.id" plain>复制</el-button>
       </el-col>
     </el-row>
   </el-card>

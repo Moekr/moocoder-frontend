@@ -1,5 +1,5 @@
 <template>
-  <el-card class="main box-card" body-style="display:flex; flex-direction:column;">
+  <el-card class="main box-card" body-style="display:flex; flex-direction:column; min-height: 0;">
     <div slot="header">
       <slot name="title">{{ title }}</slot>
     </div>

@@ -6,7 +6,24 @@ function formatTimestamp (timestamp) {
   }
   return ''
 }
+
 function padStart (num, length = 2) {
+  if (!String.prototype.padStart) {
+    /* eslint-disable no-extend-native */
+    String.prototype.padStart = function padStart (targetLength, padString) {
+      targetLength = targetLength >> 0
+      padString = String((typeof padString !== 'undefined' ? padString : ' '))
+      if (this.length > targetLength) {
+        return String(this)
+      } else {
+        targetLength = targetLength - this.length
+        if (targetLength > padString.length) {
+          padString += padString.repeat(targetLength / padString.length)
+        }
+        return padString.slice(0, targetLength) + String(this)
+      }
+    }
+  }
   return ('' + num).padStart(length, '0')
 }
 

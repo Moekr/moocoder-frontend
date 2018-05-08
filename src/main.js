@@ -9,7 +9,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import store from './store'
-import "babel-polyfill"
+import 'babel-polyfill'
 
 console.log('Moocoder-frontend ver 0.1.1')
 console.log('Maintainer: me@moekr.com')
@@ -19,8 +19,6 @@ Vue.config.productionTip = false
 Vue.use(VueResource)
 
 Vue.http.interceptors.push((request, next) => {
-  // request.headers.set('Authorization', 'Basic ZGV2czoxMjM0NTY3OA==')
-  // request.headers.set('Authorization', 'Basic ZGV2dDpNRFRJRDZ5Rnl6SkU=')
   // request.headers.set('Authorization', 'Basic cm9vdDoxMjM0NTY3OA==')
   next((response) => {
     if (response.status === 401) {

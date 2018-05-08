@@ -27,7 +27,7 @@
         <el-button type="primary" @click="dialog = true" size="small">查看控制台输出</el-button>
       </el-col>
     </el-row>
-    <el-table :data="record.failures" class="top-divide fill-card">
+    <el-table :data="record.failures" class="top-divide fill-card failure-table">
       <el-table-column type="expand">
         <template slot-scope="props">
           <pre><code>{{ props.row.trace }}</code></pre>
@@ -106,5 +106,8 @@ export default {
 <style>
   .console-output-dialog .el-dialog__body {
     padding: 1px 15px;
+  }
+  .failure-table .el-table__expanded-cell {
+    padding: 0 10px;
   }
 </style>

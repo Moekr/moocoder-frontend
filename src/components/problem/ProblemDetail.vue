@@ -136,7 +136,7 @@ export default {
       let body = new FormData()
       body.append('path', this.selectedFile)
       body.append('file', this.updateFiles[0].raw)
-      this.$http.patch('./api/problem/' + this.$route.params.problemId, body).then(response => {
+      this.$http.put('./api/problem/' + this.$route.params.problemId, body).then(response => {
         this.$message.success({
           message: '更新成功！',
           center: true

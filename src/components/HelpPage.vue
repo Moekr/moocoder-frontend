@@ -1,14 +1,34 @@
 <template>
-  <main-container title="帮助"></main-container>
+  <main-container title="帮助">
+    <div class="fill-card">
+      <student-help-page v-if="isStudent"></student-help-page>
+      <teacher-help-page v-if="isTeacher"></teacher-help-page>
+      <admin-help-page v-if="isAdmin"></admin-help-page>
+    </div>
+  </main-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import MainContainer from './MainContainer'
+import StudentHelpPage from './help/StudentHelpPage'
+import TeacherHelpPage from './help/TeacherHelpPage'
+import AdminHelpPage from './help/AdminHelpPage'
 
 export default {
   name: 'HelpPage',
   components: {
-    MainContainer
+    MainContainer,
+    StudentHelpPage,
+    TeacherHelpPage,
+    AdminHelpPage
+  },
+  computed: {
+    ...mapGetters([
+      'isStudent',
+      'isTeacher',
+      'isAdmin'
+    ])
   }
 }
 </script>

@@ -86,7 +86,7 @@ export default {
     margin: 0 auto;
   }
   .aside {
-    width: 360px;
+    width: 270px;
     height: 100%;
     background-color: white;
   }

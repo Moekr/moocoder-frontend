@@ -100,6 +100,7 @@ export default {
   }
   .console-output-code {
     height: 50vh;
+    min-height: 480px;
   }
 </style>
 

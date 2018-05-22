@@ -49,7 +49,7 @@
       <el-col v-if="isStudent || isTeacher" :span="6">
         <div v-if="exam.joined" class="grid-content button-row">{{ isTeacher ? '自测' : '' }}成绩：{{ result.score }}</div>
         <div v-else class="grid-content">
-          <el-button type="primary" size="small" @click="joinExam" :loading="loading.join">生成自测试卷</el-button>
+          <el-button type="primary" size="small" @click="joinExam" :loading="loading.join" :disabled="joinDisabled">生成自测试卷</el-button>
         </div>
       </el-col>
       <el-col :span="6" class="button-row">
@@ -202,6 +202,11 @@ export default {
     },
     statusTagContent: function () {
       return Tool.examStatusToTagContent(this.exam.status)
+    },
+    joinDisabled: function () {
+      return this.exam.status === 'UNAVAILABLE' ||
+        this.exam.status === 'FINISHED' ||
+        this.exam.status === 'CLOSED'
     }
   },
   filters: {

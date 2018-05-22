@@ -37,6 +37,8 @@ function problemTypeToTagContent (type) {
       return 'Python'
     case 'PYTHON_COVERAGE':
       return 'Python覆盖测试'
+    case 'JAVA_MUTATION':
+      return 'Java变异覆盖测试'
   }
   return type
 }

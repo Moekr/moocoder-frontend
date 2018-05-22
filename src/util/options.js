@@ -23,7 +23,8 @@ function problemTypeOptions (containAll = false) {
     {label: 'Java', value: 'JAVA'},
     {label: 'Java覆盖测试', value: 'JAVA_COVERAGE'},
     {label: 'Python', value: 'PYTHON'},
-    {label: 'Python覆盖测试', value: 'PYTHON_COVERAGE'}
+    {label: 'Python覆盖测试', value: 'PYTHON_COVERAGE'},
+    {label: 'Java变异覆盖测试', value: 'JAVA_MUTATION'}
   )
   return options
 }

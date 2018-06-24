@@ -26,6 +26,10 @@
           <icon name="regular/plus-square" scale="1.2"></icon>
           <span slot="title">创建用户</span>
         </el-menu-item>
+        <el-menu-item v-if="isStudent" index="/result">
+          <icon name="regular/plus-square" scale="1.2"></icon>
+          <span slot="title">成绩统计</span>
+        </el-menu-item>
         <el-menu-item v-if="isStudent || isTeacher" index="/help">
           <icon name="regular/question-circle" scale="1.2"></icon>
           <span slot="title">帮助</span>

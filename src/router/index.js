@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Index from '../components/Index'
 import ExamList from '../components/exam/ExamList'
 import ExamDetail from '../components/exam/ExamDetail'
+import ResultStatistics from '../components/result/ResultStatistics'
 import ResultList from '../components/result/ResultList'
 import ResultDetail from '../components/result/ResultDetail'
 import CreateExamPage from '../components/exam/CreateExamPage'
@@ -44,6 +45,11 @@ export default new Router({
           path: 'exam/:examId/result',
           name: 'ResultList',
           component: ResultList
+        },
+        {
+          path: 'result',
+          name: 'ResultStatistics',
+          component: ResultStatistics
         },
         {
           path: 'result/:resultId',

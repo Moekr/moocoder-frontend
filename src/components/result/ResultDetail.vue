@@ -7,25 +7,27 @@
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
       </div>
     </div>
-    <el-table :data="result.commits" class="fill-card">
-      <el-table-column prop="id" label="#" width="80"></el-table-column>
-      <el-table-column label="提交时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.created_at | format }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.finished ? '运行结束' : '等待或运行中' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="score" label="成绩" width="100"></el-table-column>
-      <el-table-column label="操作" width="150">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="$router.push('/commit/' + scope.row.id)">详情</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="fill-card">
+      <el-table height="100%" :data="result.commits">
+        <el-table-column prop="id" label="#" width="80"></el-table-column>
+        <el-table-column label="提交时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.created_at | format }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="200">
+          <template slot-scope="scope">
+            <span>{{ scope.row.finished ? '运行结束' : '等待或运行中' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="score" label="成绩" width="100"></el-table-column>
+        <el-table-column label="操作" width="150">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="$router.push('/commit/' + scope.row.id)">详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </main-container>
 </template>
 

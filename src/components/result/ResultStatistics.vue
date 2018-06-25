@@ -1,7 +1,7 @@
 <template>
   <main-container title="成绩统计">
     <div class="fill-card">
-      <el-table :data="resultList" @selection-change="handleSelectionChange">
+      <el-table height="100%" :data="resultList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="50"></el-table-column>
         <el-table-column prop="exam.id" label="考试编号" width="100"></el-table-column>
         <el-table-column prop="exam.name" label="考试名称"></el-table-column>
@@ -22,20 +22,20 @@
           <div class="grid-content">已选平均成绩：{{ selectedAverage }}</div>
         </el-col>
         <el-col :span="8">
-          <div class="grid-content">总成绩：{{ selectedSummary }}</div>
+          <div class="grid-content">总计成绩：{{ selectedSummary }}</div>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
-          <div class="grid-content">总场次：{{ totalCount }}</div>
+          <div class="grid-content">总计场次：{{ totalCount }}</div>
         </el-col>
         <el-col :span="16">
-          <div class="grid-content">总平均成绩：{{ totalAverage }}</div>
+          <div class="grid-content">总计平均成绩：{{ totalAverage }}</div>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="24">
-          <div>注：平均成绩按照<b>修正前</b>成绩计算，总成绩按照<b>修正后</b>成绩计算，修正后成绩 = 修正前成绩 ÷ 100 × 百分比修正</div>
+          <div>注：平均成绩按照<b>修正前</b>成绩计算，总计成绩按照<b>修正后</b>成绩计算，修正后成绩 = 修正前成绩 ÷ 100 × 百分比修正</div>
         </el-col>
       </el-row>
     </div>

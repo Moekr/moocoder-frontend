@@ -27,14 +27,16 @@
         <el-button type="primary" @click="dialog = true" size="small">查看控制台输出</el-button>
       </el-col>
     </el-row>
-    <el-table :data="record.failures" class="top-divide fill-card failure-table">
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <pre><code>{{ props.row.trace }}</code></pre>
-        </template>
-      </el-table-column>
-      <el-table-column label="错误用例" prop="name"></el-table-column>
-    </el-table>
+    <div class="top-divide fill-card">
+      <el-table height="100%" :data="record.failures" class="failure-table">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <pre><code>{{ props.row.trace }}</code></pre>
+          </template>
+        </el-table-column>
+        <el-table-column label="错误用例" prop="name"></el-table-column>
+      </el-table>
+    </div>
   </main-container>
 </template>
 
@@ -86,6 +88,7 @@ export default {
 
 <style scoped>
   pre code {
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
     overflow: auto;
     display: block;
     padding: 10px;

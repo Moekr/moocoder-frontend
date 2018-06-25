@@ -63,19 +63,35 @@
         <el-button v-if="isTeacher || isAdmin" class="column-button" type="primary" @click="dialog.update = true" plain>修改</el-button>
       </el-col>
     </el-row>
-    <el-row :gutter="20" v-if="exam.url">
+    <el-row :gutter="20">
       <el-col :span="24">
-        <div class="grid-content column-text">试卷地址：<span id="exam-url">{{ exam.url }}</span></div>
-        <el-button class="column-button" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain>复制</el-button>
+        <div class="grid-content column-text">试卷地址：<span id="exam-url">{{ exam.url ? exam.url : '不可用' }}</span></div>
+        <el-button class="column-button" type="primary" id="copy-btn" data-clipboard-target="#exam-url" plain v-if="exam.url">复制</el-button>
       </el-col>
     </el-row>
-    <div class="fill-card top-divide">
-      <div v-if="exam.problems && exam.problems.length">
-        <el-row>
-          <el-col>
-            <b>题目列表：</b>
-          </el-col>
-        </el-row>
+    <el-tabs class="top-divide exam-detail-tabs" :value="exam.joined ? 'commits' : 'problems'">
+      <el-tab-pane label="提交记录" name="commits" v-if="exam.joined">
+        <el-table height="100%" v-if="exam.joined" :data="result.commits">
+          <el-table-column prop="id" label="#" width="80"></el-table-column>
+          <el-table-column label="提交时间">
+            <template slot-scope="scope">
+              <span>{{ scope.row.created_at | format }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" width="180">
+            <template slot-scope="scope">
+              <span>{{ scope.row.finished ? '运行结束' : '等待或运行中' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="score" label="成绩" width="120"></el-table-column>
+          <el-table-column label="操作" width="120">
+            <template slot-scope="scope">
+              <el-button type="primary" size="mini" @click="$router.push('/commit/' + scope.row.id)">详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane class="problems-tab-pane" label="题目列表" name="problems" v-if="exam.problems && exam.problems.length">
         <el-collapse accordion>
           <el-collapse-item v-for="problem in exam.problems" :key="problem.id" :name="problem.id">
             <template slot="title">
@@ -84,32 +100,8 @@
             <div>{{ problem.description }}</div>
           </el-collapse-item>
         </el-collapse>
-      </div>
-      <el-row v-if="exam.joined" style="margin-top: 12px;">
-        <el-col>
-          <b>提交记录：</b>
-        </el-col>
-      </el-row>
-      <el-table v-if="exam.joined" :data="result.commits">
-        <el-table-column prop="id" label="#" width="80"></el-table-column>
-        <el-table-column label="提交时间">
-          <template slot-scope="scope">
-            <span>{{ scope.row.created_at | format }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="180">
-          <template slot-scope="scope">
-            <span>{{ scope.row.finished ? '运行结束' : '等待或运行中' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="score" label="成绩" width="120"></el-table-column>
-        <el-table-column label="操作" width="120">
-          <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="$router.push('/commit/' + scope.row.id)">详情</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+      </el-tab-pane>
+    </el-tabs>
   </main-container>
 </template>
 
@@ -250,5 +242,21 @@ export default {
   }
   .problem-tag {
     margin-left: 10px;
+  }
+  .exam-detail-tabs {
+    height: calc(100% - 153px);
+  }
+  .el-tab-pane {
+    height: 100%;
+  }
+  .problems-tab-pane {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+</style>
+
+<style>
+  .exam-detail-tabs .el-tabs__content{
+    height: calc(100% - 55px);
   }
 </style>

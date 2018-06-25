@@ -1,5 +1,5 @@
 <template>
-  <main-container title="帮助">
+  <main-container title="使用帮助">
     <div class="fill-card">
       <student-help-page v-if="isStudent"></student-help-page>
       <teacher-help-page v-if="isTeacher"></teacher-help-page>

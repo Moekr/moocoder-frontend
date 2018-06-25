@@ -3,15 +3,15 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import { Alert, Button, Card, Collapse, CollapseItem, Col, Container, DatePicker, Dialog, Dropdown,
-  DropdownItem, DropdownMenu, Form, FormItem, Header, Input, InputNumber, Main, Menu, MenuItem, Message, Option, Pagination, Radio,
-  RadioGroup, Row, Select, Table, TableColumn, Tag, Upload } from 'element-ui'
+  DropdownItem, DropdownMenu, Form, FormItem, Header, Input, InputNumber, Main, Menu, MenuItem, Message, Option,
+  Pagination, Radio, RadioGroup, Row, Select, Tabs, Table, TabPane, TableColumn, Tag, Upload } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
 import store from './store'
 import 'babel-polyfill'
 
-console.log('Moocoder-frontend ver 0.1.3')
+console.log('Moocoder-frontend ver 0.1.4')
 console.log('Maintainer: me@moekr.com')
 
 Vue.config.productionTip = false
@@ -30,8 +30,8 @@ Vue.http.interceptors.push((request, next) => {
 })
 
 const components = [Alert, Button, Card, Collapse, CollapseItem, Col, Container, DatePicker, Dialog, Dropdown,
-  DropdownItem, DropdownMenu, Form, FormItem, Header, Input, InputNumber, Main, Menu, MenuItem, Message, Option, Pagination, Radio,
-  RadioGroup, Row, Select, Table, TableColumn, Tag, Upload]
+  DropdownItem, DropdownMenu, Form, FormItem, Header, Input, InputNumber, Main, Menu, MenuItem, Message, Option,
+  Pagination, Radio, RadioGroup, Row, Select, Tabs, Table, TabPane, TableColumn, Tag, Upload]
 components.forEach(item => {
   Vue.component(item.name, item)
 })

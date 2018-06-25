@@ -41,11 +41,18 @@ export default {
   computed: {
     statusOptions: function () {
       return Options.examStatusOptions(this.$store.state.user.role)
+    },
+    statusInput: {
+      get: function () {
+        return this.$store.state.examStatus
+      },
+      set: function (examStatus) {
+        this.$store.commit('examStatus', examStatus)
+      }
     }
   },
   data () {
     return {
-      statusInput: '',
       pageInfo: {},
       examList: []
     }

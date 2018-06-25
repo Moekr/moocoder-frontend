@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <el-card class="aside box-card">
-      <el-menu default-active="/exam" router>
+      <el-menu default-active="/exam" active-text-color="#303133" router>
         <el-menu-item index="/exam">
           <icon name="regular/file-alt" scale="1.2"></icon>
-          <span slot="title">考试</span>
+          <span slot="title">考试列表</span>
         </el-menu-item>
         <el-menu-item v-if="isTeacher" index="/exam/create">
           <icon name="regular/plus-square" scale="1.2"></icon>
@@ -12,7 +12,7 @@
         </el-menu-item>
         <el-menu-item v-if="isTeacher || isAdmin" index="/problem">
           <icon name="regular/file-code" scale="1.2"></icon>
-          <span slot="title">题目</span>
+          <span slot="title">题目列表</span>
         </el-menu-item>
         <el-menu-item v-if="isTeacher || isAdmin" index="/problem/upload">
           <icon name="regular/plus-square" scale="1.2"></icon>
@@ -20,21 +20,22 @@
         </el-menu-item>
         <el-menu-item v-if="isAdmin" index="/user">
           <icon name="regular/user" scale="1.2"></icon>
-          <span slot="title">用户</span>
+          <span slot="title">用户列表</span>
         </el-menu-item>
         <el-menu-item v-if="isAdmin" index="/user/register">
           <icon name="regular/plus-square" scale="1.2"></icon>
           <span slot="title">创建用户</span>
         </el-menu-item>
         <el-menu-item v-if="isStudent" index="/result">
-          <icon name="regular/plus-square" scale="1.2"></icon>
+          <icon name="calculator" scale="1.2"></icon>
           <span slot="title">成绩统计</span>
         </el-menu-item>
         <el-menu-item v-if="isStudent || isTeacher" index="/help">
           <icon name="regular/question-circle" scale="1.2"></icon>
-          <span slot="title">帮助</span>
+          <span slot="title">使用帮助</span>
         </el-menu-item>
       </el-menu>
+      <p class="copyright">©2018 NJU MOOCODER TEAM</p>
     </el-card>
     <router-view/>
   </div>
@@ -50,6 +51,7 @@ import 'vue-awesome/icons/regular/file-alt'
 import 'vue-awesome/icons/regular/plus-square'
 import 'vue-awesome/icons/regular/file-code'
 import 'vue-awesome/icons/regular/user'
+import 'vue-awesome/icons/calculator'
 import 'vue-awesome/icons/regular/question-circle'
 
 let cb = new Clipboard('#copy-btn')
@@ -96,5 +98,19 @@ export default {
   }
   .el-menu-item span {
     margin-left: 8px;
+  }
+  .copyright {
+    position: absolute;
+    bottom: 20px;
+    font-size: 12px;
+    color: #e3e3e3;
+    min-width: 230px;
+    text-align: center;
+  }
+</style>
+
+<style>
+  .aside .el-card__body {
+    height: calc(100% - 40px);
   }
 </style>

@@ -62,23 +62,24 @@
         <div class="grid-content">{{ problem.description }}</div>
       </el-col>
     </el-row>
-    <el-table :data="files" class="fill-card">
-      <el-table-column label="文件列表">
-        <template slot-scope="scope">
-          <span>{{ scope.row.path }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.type }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="120">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="selectedFile = scope.row.path; dialog.update = true" :disabled="!updateEnable">更新文件</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="fill-card top-divide">
+      <el-table height="100%" :data="files">
+        <el-table-column label="文件列表">
+          <template slot-scope="scope">
+            <span>{{ scope.row.path }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="类型" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="selectedFile = scope.row.path; dialog.update = true" :disabled="!updateEnable">更新文件</el-button>
+          </template>
+        </el-table-column>
+      </el-table></div>
   </main-container>
 </template>
 

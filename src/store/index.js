@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: {},
+    examStatus: 'AVAILABLE',
     cart: []
   },
   getters: {
@@ -22,6 +23,9 @@ export default new Vuex.Store({
   mutations: {
     saveUser (state, user) {
       state.user = user
+    },
+    examStatus (state, examStatus) {
+      state.examStatus = examStatus
     },
     addProblem (state, problem) {
       state.cart.push(problem)

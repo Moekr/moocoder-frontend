@@ -29,24 +29,26 @@
         <b>测试运行情况：</b>
       </el-col>
     </el-row>
-    <el-table :data="commit.records" class="fill-card">
-      <el-table-column label="题目">
-        <template slot-scope="scope">
-          <span>{{ scope.row.problem.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="180">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusTagType">{{ scope.row.status | statusTagContent }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="score" label="分数" width="80"></el-table-column>
-      <el-table-column label="操作" width="120">
-        <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="$router.push('/record/' + scope.row.id)">详情</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="fill-card">
+      <el-table height="100%" :data="commit.records">
+        <el-table-column label="题目">
+          <template slot-scope="scope">
+            <span>{{ scope.row.problem.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="180">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status | statusTagType">{{ scope.row.status | statusTagContent }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="score" label="分数" width="80"></el-table-column>
+        <el-table-column label="操作" width="120">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="$router.push('/record/' + scope.row.id)">详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </main-container>
 </template>
 

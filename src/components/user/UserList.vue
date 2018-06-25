@@ -1,9 +1,9 @@
 <template>
     <main-container title="用户列表">
       <div class="list-header">
-        <el-input v-model="searchInput" placeholder="搜索用户名" class="list-header-input"></el-input>
+        <el-input v-model="searchInput" placeholder="输入用户名" class="list-header-input"></el-input>
+        <el-button type="primary" icon="el-icon-search" @click="fetchData(1)">搜索</el-button>
         <div class="list-header-button">
-          <el-button type="primary" icon="el-icon-search" @click="fetchData(1)">搜索</el-button>
           <el-button type="primary" icon="el-icon-refresh" @click="fetchData(pageInfo.page)">刷新</el-button>
         </div>
       </div>
@@ -17,26 +17,28 @@
           <el-button type="danger" @click="deleteUser" :loading="loading">确定</el-button>
         </span>
       </el-dialog>
-      <el-table :data="userList" class="fill-card">
-        <el-table-column prop="id" label="#" width="50"></el-table-column>
-        <el-table-column prop="username" label="用户名" width="150px"></el-table-column>
-        <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column label="注册时间" width="150px">
-          <template slot-scope="scope">
-            <span>{{ scope.row.created_at | format }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="身份" width="80">
-          <template slot-scope="scope">
-            <span>{{ scope.row.role | role }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150">
-          <template slot-scope="scope">
-            <el-button type="danger" size="mini" @click="selectUser(scope.row)">删除用户</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="fill-card">
+        <el-table height="100%" :data="userList">
+          <el-table-column prop="id" label="#" width="50"></el-table-column>
+          <el-table-column prop="username" label="用户名" width="150px"></el-table-column>
+          <el-table-column prop="email" label="邮箱"></el-table-column>
+          <el-table-column label="注册时间" width="150px">
+            <template slot-scope="scope">
+              <span>{{ scope.row.created_at | format }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="身份" width="80">
+            <template slot-scope="scope">
+              <span>{{ scope.row.role | role }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button type="danger" size="mini" @click="selectUser(scope.row)">删除用户</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <el-pagination background layout="prev, pager, next" @current-change="fetchData" :page-size="30" :total=pageInfo.total></el-pagination>
     </main-container>
 </template>

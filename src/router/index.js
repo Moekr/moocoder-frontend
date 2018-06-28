@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import Index from '../components/Index'
 import ExamList from '../components/exam/ExamList'
 import ExamDetail from '../components/exam/ExamDetail'
@@ -14,6 +15,7 @@ import ProblemDetail from '../components/problem/ProblemDetail'
 import UploadProblemPage from '../components/problem/UploadProblemPage'
 import UserList from '../components/user/UserList'
 import RegisterUserPage from '../components/user/RegisterUserPage'
+import ChangePasswordPage from '../components/user/ChangePasswordPage'
 import HelpPage from '../components/HelpPage'
 
 Vue.use(Router)
@@ -90,6 +92,11 @@ export default new Router({
           path: 'user/register',
           name: 'RegisterUserPage',
           component: RegisterUserPage
+        },
+        {
+          path: 'password',
+          name: 'ChangePasswordPage',
+          component: ChangePasswordPage
         },
         {
           path: 'help',

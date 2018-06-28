@@ -4,6 +4,7 @@
       <span class="card-title-text">题目详情</span>
       <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/problem')">返回至列表</el-button>
+        <el-button type="primary" icon="el-icon-download" size="small" @click="download">下载</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
         <el-button v-if="removeEnable" type="danger" size="small" @click="$store.commit('removeProblem', problem)">移出试题清单</el-button>
         <el-button v-else-if="addEnable" type="success" size="small" @click="$store.commit('addProblem', problem)">加入试题清单</el-button>
@@ -36,11 +37,8 @@
       </span>
     </el-dialog>
     <el-row>
-      <el-col :span="2">
-        <div class="grid-content">题目名称：</div>
-      </el-col>
-      <el-col :span="22">
-        <div class="grid-content">{{ problem.name }}</div>
+      <el-col :span="24">
+        <div class="grid-content">题目名称：{{ problem.name }}</div>
       </el-col>
     </el-row>
     <el-row :gutter="20">
@@ -110,6 +108,9 @@ export default {
       this.problem.public_files.forEach(item => this.files.push({path: item, type: 'Public'}))
       this.problem.protected_files.forEach(item => this.files.push({path: item, type: 'Protected'}))
       this.problem.private_files.forEach(item => this.files.push({path: item, type: 'Private'}))
+    },
+    download () {
+      window.location.href = './file/problem/' + this.problem.id
     },
     deleteProblem () {
       this.$store.commit('removeProblem', this.problem)

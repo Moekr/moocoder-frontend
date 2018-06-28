@@ -4,6 +4,7 @@
       <span class="card-title-text">学生成绩</span>
       <div class="card-title-button">
         <el-button type="primary" icon="el-icon-back" size="small" @click="$router.push('/exam/' + $route.params.examId)">返回至考试</el-button>
+        <el-button type="primary" icon="el-icon-download" size="small" @click="download">下载成绩单</el-button>
         <el-button type="primary" icon="el-icon-refresh" size="small" @click="fetchData">刷新</el-button>
       </div>
     </div>
@@ -71,6 +72,9 @@ export default {
           center: true
         })
       })
+    },
+    download () {
+      window.location.href = './file/result/' + this.$route.params.examId
     }
   },
   computed: {

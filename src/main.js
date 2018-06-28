@@ -11,7 +11,7 @@ import router from './router'
 import store from './store'
 import 'babel-polyfill'
 
-console.log('Moocoder-frontend ver 0.1.4')
+console.log('Moocoder-frontend ver 0.1.5')
 console.log('Maintainer: me@moekr.com')
 
 Vue.config.productionTip = false

@@ -3,7 +3,7 @@
     <el-card class="aside box-card">
       <el-menu default-active="/exam" active-text-color="#303133" router>
         <el-menu-item index="/exam">
-          <icon name="list" scale="1.2"></icon>
+          <icon name="regular/list" scale="1.2"></icon>
           <span slot="title">考试列表</span>
         </el-menu-item>
         <el-menu-item v-if="isTeacher" index="/exam/create">
@@ -27,7 +27,7 @@
           <span slot="title">创建用户</span>
         </el-menu-item>
         <el-menu-item v-if="isStudent" index="/result">
-          <icon name="calculator" scale="1.2"></icon>
+          <icon name="regular/calculator" scale="1.2"></icon>
           <span slot="title">成绩统计</span>
         </el-menu-item>
         <el-menu-item v-if="isStudent || isTeacher" index="/password">
@@ -52,12 +52,10 @@ import Clipboard from 'clipboard'
 import { mapGetters } from 'vuex'
 import '../main.css'
 import '../util/icons'
-import 'vue-awesome/icons/list'
 import 'vue-awesome/icons/regular/file-alt'
 import 'vue-awesome/icons/regular/plus-square'
 import 'vue-awesome/icons/regular/file-code'
 import 'vue-awesome/icons/regular/user'
-import 'vue-awesome/icons/calculator'
 import 'vue-awesome/icons/regular/question-circle'
 
 let cb = new Clipboard('#copy-btn')
